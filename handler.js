@@ -8,7 +8,7 @@ module.exports.hello = (event, context, callback) => {
     body: JSON.stringify({
       message: 'Go Serverless v1.0! Your function executed successfully!',
       env: process.env.TEST_VARIABLE,
-      ci: process.env.CI_VARIBALE,
+      ci: process.env.CI_VARIABLE,
       input: event,
     }),
   };
