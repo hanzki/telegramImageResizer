@@ -1,0 +1,23 @@
+{
+  "name": "telegram-image-resizer",
+  "version": "1.0.0",
+  "description": "Telegram bot for resizing images",
+  "main": "handler.js",
+  "dependencies": {
+    "dotenv": "^2.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanzki/telegramImageResizer.git"
+  },
+  "author": "Hannu Huhtanen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hanzki/telegramImageResizer/issues"
+  },
+  "homepage": "https://github.com/hanzki/telegramImageResizer#readme"
+}
