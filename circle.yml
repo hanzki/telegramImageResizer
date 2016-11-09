@@ -12,5 +12,5 @@ deployment:
   staging:
     branch: master
     commands:
-      - echo $CI_VARIABLE >> .env
+      - echo "CI_VARIABLE=$CI_VARIABLE" >> .env
       - serverless deploy
