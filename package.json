@@ -8,7 +8,7 @@
     "promise": "^7.1.1"
   },
   "scripts": {
-    "test": "mocha tests"
+    "test": "mocha test"
   },
   "repository": {
     "type": "git",

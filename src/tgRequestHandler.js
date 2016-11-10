@@ -30,5 +30,16 @@ module.exports.handler = (event, context, callback) => {
 
     console.log("received update: ", update);
 
-    callback(null, update.update_id ? okResponse : badResponse);
+    callback(null, update.update_id && update.message ? telegramResponse(update.message.chat.id, "Hello!") : badResponse);
 };
+
+function telegramResponse(chatId, message) {
+    return {
+        statusCode: 200,
+        body: JSON.stringify({
+            method: "sendMessage",
+            chat_id: chatId,
+            text: message,
+        }),
+    };
+}

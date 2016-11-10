@@ -21,7 +21,7 @@ describe('TgRequestHandler', function() {
 
     it('Bad request on non telegram message', function() {
         const event = {
-            body: "{}"
+            body: '{}'
         };
 
         handler(event, null, (error, result) => {
@@ -33,10 +33,19 @@ describe('TgRequestHandler', function() {
     it('Ok on telegram update ', function() {
         const event = {
             body: JSON.stringify(
-                    {
-                        update_id: 123
+                {
+                    update_id: 123,
+                    message: {
+                        message_id: 123,
+                        chat: {
+                            id: 123456,
+                            type: 'private'
+                        },
+                        date: 1476949729,
+                        text: 'This is test'
                     }
-                )
+                }
+            )
         };
 
         handler(event, undefined, (error, result) => {
