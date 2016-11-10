@@ -47,7 +47,7 @@ provider:
 
 functions:
   TgRequestHandler:
-    handler: src/tgRequestHandler.hello
+    handler: src/tgRequestHandler.handler
     events:
       - http:
           path: invoke
