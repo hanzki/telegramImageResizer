@@ -2,13 +2,13 @@
   "name": "telegram-image-resizer",
   "version": "1.0.0",
   "description": "Telegram bot for resizing images",
-  "main": "handler.js",
+  "main": "src/handler.js",
   "dependencies": {
-    "dotenv": "^2.0.0"
+    "dotenv": "^2.0.0",
+    "promise": "^7.1.1"
   },
-  "devDependencies": {},
   "scripts": {
-    "test": "echo \"No test specified\""
+    "test": "mocha tests"
   },
   "repository": {
     "type": "git",

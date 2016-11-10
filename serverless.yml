@@ -47,14 +47,14 @@ provider:
 
 functions:
   TgRequestHandler:
-    handler: handler.hello
+    handler: src/tgRequestHandler.hello
     events:
       - http:
           path: invoke
           method: post
 
   TgImageResizer:
-    handler: handler.hello
+    handler: src/handler.hello
     events:
       - s3:
           bucket: tg-img-resizer-images
@@ -63,7 +63,7 @@ functions:
             - prefix: originals/
 
   TgMessenger:
-    handler: handler.hello
+    handler: src/handler.hello
     events:
       - s3:
           bucket: tg-img-resizer-images
