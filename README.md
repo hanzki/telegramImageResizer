@@ -2,4 +2,4 @@
 Telegram bot for resizing images
 
 ## Architecture
-![architecture](doc/architechture)
+![architecture](doc/architechture.png)
