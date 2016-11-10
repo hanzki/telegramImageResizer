@@ -9,6 +9,13 @@ dependencies:
     - npm install -g serverless
     - npm install -g mocha
 
+test:
+  override:
+    - mocha test --reporter mocha-junit-reporter:
+        environment:
+          MOCHA_FILE: $CIRCLE_TEST_REPORTS/junit/test-results.xml
+
+
 deployment:
   staging:
     branch: master
