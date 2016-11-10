@@ -22,6 +22,7 @@ provider:
   runtime: nodejs4.3
   stage: dev
   region: eu-west-1
+  cfLogs: true
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -45,12 +46,31 @@ provider:
 #  artifact: my-service-code.zip
 
 functions:
-  hello:
+  TgRequestHandler:
     handler: handler.hello
     events:
       - http:
           path: invoke
           method: post
+
+  TgImageResizer:
+    handler: handler.hello
+    events:
+      - s3:
+          bucket: tg-img-resizer-images
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: originals/
+
+  TgMessenger:
+    handler: handler.hello
+    events:
+      - s3:
+          bucket: tg-img-resizer-images
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: processed/
+
 #     - s3: ${env:BUCKET}
 #     - schedule: rate(10 minutes)
 #     - sns: greeter-topic
