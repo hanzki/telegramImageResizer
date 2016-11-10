@@ -9,48 +9,52 @@ const handler = require('./../src/tgRequestHandler').handler;
 
 describe('TgRequestHandler', function() {
 
-    it('Lambda error on events without body', function() {
-        const event = {
-        };
+    describe('#handler', function () {
 
-        handler(event, null, (error, result) => {
-                assert(error);
-            }
-        )
-    });
+        it('Lambda error on events without body', function() {
+            const event = {
+            };
 
-    it('Bad request on non telegram message', function() {
-        const event = {
-            body: '{}'
-        };
-
-        handler(event, null, (error, result) => {
-                assert(result.statusCode == 400);
-            }
-        )
-    });
-
-    it('Ok on telegram update ', function() {
-        const event = {
-            body: JSON.stringify(
-                {
-                    update_id: 123,
-                    message: {
-                        message_id: 123,
-                        chat: {
-                            id: 123456,
-                            type: 'private'
-                        },
-                        date: 1476949729,
-                        text: 'This is test'
-                    }
+            handler(event, null, (error, result) => {
+                    assert(error);
                 }
             )
-        };
+        });
 
-        handler(event, undefined, (error, result) => {
-                assert(result.statusCode == 200);
-            }
-        )
+        it('Bad request on non telegram message', function() {
+            const event = {
+                body: '{}'
+            };
+
+            handler(event, null, (error, result) => {
+                    assert(result.statusCode == 400);
+                }
+            )
+        });
+
+        it('Ok on telegram update ', function() {
+            const event = {
+                body: JSON.stringify(
+                    {
+                        update_id: 123,
+                        message: {
+                            message_id: 123,
+                            chat: {
+                                id: 123456,
+                                type: 'private'
+                            },
+                            date: 1476949729,
+                            text: 'This is test'
+                        }
+                    }
+                )
+            };
+
+            handler(event, undefined, (error, result) => {
+                    assert(result.statusCode == 200);
+                }
+            )
+        });
+
     });
 });

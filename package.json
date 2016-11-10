@@ -5,6 +5,7 @@
   "main": "src/handler.js",
   "dependencies": {
     "dotenv": "^2.0.0",
+    "node-telegram-bot-api": "^0.24.0",
     "promise": "^7.1.1"
   },
   "scripts": {
