@@ -5,11 +5,11 @@
 'use strict';
 
 require('dotenv').config();
-var TelegramBot = require('node-telegram-bot-api');
+const TgBot = require('./tgBot');
 
-var token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN;
+const bot = new TgBot(token);
 
-var bot = new TelegramBot(token, {polling: false, webHook: false});
 
 module.exports.handler = (event, context, callback) => {
     const badResponse = {
@@ -32,27 +32,14 @@ module.exports.handler = (event, context, callback) => {
     }
 
     var update = event.body ? JSON.parse(event.body) : undefined;
-
-    if(update) {
-        bot.processUpdate(update);
-    }
-
     console.log("received update: ", update);
 
-    callback(null, update.update_id && update.message ? telegramResponse(update.message.chat.id, "Hello!") : badResponse);
+    var updateProcess = update ? bot.processUpdate(update) : Promise.reject();
+
+    updateProcess.then(function () {
+        callback(null, okResponse);
+    }).catch(function (err) {
+        console.error(err);
+        callback(badResponse, null);
+    });
 };
-
-function determineUpdateType(update) {
-
-}
-
-function telegramResponse(chatId, message) {
-    return {
-        statusCode: 200,
-        body: JSON.stringify({
-            method: "sendMessage",
-            chat_id: chatId,
-            text: message,
-        }),
-    };
-}
