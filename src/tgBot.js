@@ -47,6 +47,9 @@ class TgBot {
 
     downloadFile(fileId) {
 
+        return Promise.resolve();
+
+        /*
         var args = {
             parameters: { file_id: fileId }
         };
@@ -74,6 +77,7 @@ class TgBot {
         });
 
         return p;
+        */
 
     }
 
