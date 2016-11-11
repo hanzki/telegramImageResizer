@@ -51,24 +51,24 @@ class TgBot {
             parameters: { file_id: fileId }
         };
 
-        var p = new Promise(function (resolve, reject) {
-            client.get('https://api.telegram.org/bot' + this.token + '/sendMessage', args, function (data, response) {
+        var p = new Promise( (resolve, reject) => {
+            client.get('https://api.telegram.org/bot' + this.token + '/sendMessage', args, (data, response) => {
 
                 var dest = "image.png";
                 var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.file_path;
                 var file = fs.createWriteStream(dest);
 
-                https.get(url, function(response) {
+                https.get(url, (response) => {
                     response.pipe(file);
-                    file.on('finish', function() {
+                    file.on('finish', () => {
                         file.close(resolve(dest));  // close() is async, call cb after close completes.
                     });
-                }).on('error', function(err) { // Handle errors
+                }).on('error', (err) => { // Handle errors
                     fs.unlink(dest); // Delete the file async. (But we don't check the result)
                     reject(err);
                 });
 
-            }).on('error', function (err) {
+            }).on('error', (err) => {
                 reject(err);
             });
         });
@@ -87,10 +87,10 @@ class TgBot {
             headers: { 'Content-Type': 'application/json' }
         };
 
-        var p = new Promise(function (resolve, reject) {
-            client.post('https://api.telegram.org/bot' + this.token + '/sendMessage', args, function (data, response) {
+        var p = new Promise( (resolve, reject) => {
+            client.post('https://api.telegram.org/bot' + this.token + '/sendMessage', args, (data, response) => {
                 resolve(data);
-            }).on('error', function (err) {
+            }).on('error', (err) => {
                 reject(err);
             });
         });

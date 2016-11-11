@@ -32,14 +32,13 @@ module.exports.handler = (event, context, callback) => {
     }
 
     var update = event.body ? JSON.parse(event.body) : undefined;
-    console.log("received update: ", update);
+    //console.log("received update: ", update);
 
-    var updateProcess = update ? bot.processUpdate(update) : Promise.reject();
+    var updateProcess = update && update.update_id ? bot.processUpdate(update) : Promise.reject();
 
     updateProcess.then(function () {
         callback(null, okResponse);
     }).catch(function (err) {
-        console.error(err);
-        callback(badResponse, null);
+        callback(null, badResponse);
     });
 };

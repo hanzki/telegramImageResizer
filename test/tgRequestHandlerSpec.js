@@ -6,22 +6,31 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const TelegramBot = require('node-telegram-bot-api');
-
-const handler = require('./../src/tgRequestHandler').handler;
+const tgRequestHandler = require('./../src/tgRequestHandler');
+const TgBot = require('./../src/tgBot');
 
 describe('TgRequestHandler', function() {
 
     describe('#handler', function () {
 
+        const handler = (event, context) => {
+            return new Promise((resolve, reject) => tgRequestHandler.handler(event, context, (error, result) => {
+                if(error)
+                    reject(error);
+                else
+                    resolve(result);
+            }));
+        };
+
         it('Lambda error on events without body', function() {
             const event = {
             };
 
-            handler(event, null, (error, result) => {
-                    assert(error);
-                }
-            )
+            return handler(event, null).then((result) => {
+                assert(false, "expected an error");
+            }, (error) => {
+                assert(error);
+            });
         });
 
         it('Bad request on non telegram message', function() {
@@ -29,13 +38,12 @@ describe('TgRequestHandler', function() {
                 body: '{}'
             };
 
-            handler(event, null, (error, result) => {
-                assert.ifError(error);
-                assert(result.statusCode == 400);
+            return handler(event, null).then((result) => {
+                assert.equal(result.statusCode, 400);
             });
         });
 
-        it('Ok on telegram update ', function() {
+        it('Ok on telegram update ', sinon.test(function() {
             const event = {
                 body: JSON.stringify(
                     {
@@ -53,13 +61,16 @@ describe('TgRequestHandler', function() {
                 )
             };
 
-            handler(event, undefined, (error, result) => {
-                assert.ifError(error);
-                assert(result.statusCode == 200);
-            });
-        });
+            var processUpdateStub = this.stub(TgBot.prototype, 'processUpdate', () => Promise.resolve());
 
-        it('Call processPhoto on message with photos ', function() {
+            return handler(event, undefined).then((result) => {
+                sinon.assert.calledOnce(processUpdateStub);
+                assert.equal(result.statusCode, 200);
+            });
+
+        }));
+
+        it('Call processPhoto on message with photos ', sinon.test(function() {
             const event = {
                 body: JSON.stringify(
                     {
@@ -84,14 +95,13 @@ describe('TgRequestHandler', function() {
                 )
             };
 
-            sinon.stub(TelegramBot.prototype, 'sendPhoto');
+            var processUpdateStub = this.stub(TgBot.prototype, 'processUpdate', () => Promise.resolve());
 
-            handler(event, undefined, (error, result) => {
-                sinon.assert.calledOnce(TelegramBot.prototype.sendPhoto);
-                assert.ifError(error);
+            return handler(event, undefined).then((result) => {
+                sinon.assert.calledOnce(processUpdateStub);
                 assert(result.statusCode == 200);
             });
-        });
+        }));
 
     });
 });
