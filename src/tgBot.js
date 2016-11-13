@@ -7,6 +7,8 @@
 const https = require('https');
 const fs = require('fs');
 const restler = require('restler');
+const path = require('path');
+const mime = require('mime');
 const Client = require('node-rest-client').Client;
 
 const utils = require('./utils');
@@ -67,7 +69,7 @@ class TgBot {
             client.get('https://api.telegram.org/bot' + this.token + '/getFile', args, (data, response) => {
                 if( ! response.statusCode.toString().startsWith("2")) return reject('got ' + response.statusCode + ' response');
 
-                var dest = this.imageDir + "image.png";
+                var dest = this.imageDir + path.basename(data.result.file_path);
                 var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.result.file_path;
 
                 mockableDownloadFile(url, dest).then(resolve, reject);
@@ -113,7 +115,7 @@ class TgBot {
                     multipart: true,
                     data: {
                         chat_id: chatId,
-                        document: restler.file(file, null, stats.size, null, "image/png")
+                        document: restler.file(file, null, stats.size, null, mime.lookup(file))
                     }
                 }).on("complete", function (result) {
                     if(result instanceof Error) {
