@@ -65,6 +65,8 @@ class TgBot {
             var mockableDownloadFile = utils.downloadFile;
 
             client.get('https://api.telegram.org/bot' + this.token + '/getFile', args, (data, response) => {
+                if( ! response.statusCode.toString().startsWith("2")) return reject('got ' + response.statusCode + ' response');
+
                 var dest = this.imageDir + "image.png";
                 var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.result.file_path;
 
@@ -91,7 +93,7 @@ class TgBot {
 
         var p = new Promise( (resolve, reject) => {
             client.post('https://api.telegram.org/bot' + this.token + '/sendMessage', args, (data, response) => {
-                if(response.statusCode != 200) reject(data);
+                if( ! response.statusCode.toString().startsWith("2")) return reject('got ' + response.statusCode + ' response');
                 else resolve(data);
             }).on('error', (err) => {
                 reject(err);
