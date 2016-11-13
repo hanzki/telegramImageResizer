@@ -8,7 +8,6 @@ const https = require('https');
 const fs = require('fs');
 const restler = require('restler');
 const path = require('path');
-const mime = require('mime');
 const Client = require('node-rest-client').Client;
 
 const utils = require('./utils');
@@ -19,7 +18,16 @@ class TgBot {
 
     constructor(token) {
         this.token = token;
-        this.imageDir = '/tmp/';
+        this.imageDir = '/tmp/images/';
+        this.outputDir = '/tmp/output/';
+
+        if (!fs.existsSync(this.imageDir)){
+            fs.mkdirSync(this.imageDir);
+        }
+
+        if (!fs.existsSync(this.outputDir)){
+            fs.mkdirSync(this.outputDir);
+        }
     }
 
     processUpdate(update) {
@@ -38,9 +46,9 @@ class TgBot {
 
         if(msg.photo) {
             var largestPhoto = msg.photo.sort((p1, p2) => p2.width * p2.height - p1.width * p1.height)[0];
-            result = this.processPhoto(msg.chat.id, largestPhoto.file_id);
-        } else if (msg.document) {
-            result = this.processPhoto(msg.chat.id, msg.document.file_id);
+            result = this.processPhoto(msg.chat.id, largestPhoto.file_id, 'image/jpeg');
+        } else if (msg.document && msg.document.mime_type.startsWith('image/')) {
+            result = this.processPhoto(msg.chat.id, msg.document.file_id, msg.document.mime_type);
         } else {
             result = this.sendMessage(msg.chat.id, "Send me an image");
         }
@@ -48,10 +56,11 @@ class TgBot {
         return result;
     }
 
-    processPhoto(chatId, fileId) {
+    processPhoto(chatId, fileId, mimeType) {
         var p = this.getFile(fileId)
+            .then((image) => utils.resizeImage(image, this.outputDir))
             .then((image) => {
-                return this.sendFile(chatId, image);
+                return this.sendFile(chatId, image, 'image/png');
             });
 
         return p;
@@ -106,7 +115,7 @@ class TgBot {
         return p;
     }
 
-    sendFile(chatId, file) {
+    sendFile(chatId, file, mimeType) {
 
         var url = 'https://api.telegram.org/bot' + this.token + '/sendDocument';
 
@@ -116,7 +125,7 @@ class TgBot {
                     multipart: true,
                     data: {
                         chat_id: chatId,
-                        document: restler.file(file, null, stats.size, null, mime.lookup(file))
+                        document: restler.file(file, null, stats.size, null, mimeType)
                     }
                 }).on("complete", function (result) {
                     if(result instanceof Error) {

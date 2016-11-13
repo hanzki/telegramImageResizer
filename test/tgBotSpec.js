@@ -112,7 +112,7 @@ describe('TgBot', function() {
                 .post('/bot' + token + '/sendDocument', _ => true)
                 .reply(200);
 
-            return bot.sendFile(chatId, file);
+            return bot.sendFile(chatId, file, 'text/plain');
 
         });
 
