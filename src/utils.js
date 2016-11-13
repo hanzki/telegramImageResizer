@@ -25,13 +25,15 @@ function downloadFile(url, dest) {
 }
 
 function resizeImage(original, outputDir) {
+    console.log('resize', original, outputDir);
 
     return new Promise((resolve, reject) => {
-        var outputFile = path.format({
-            dir: outputDir,
-            name: path.parse(original).name,
-            ext: '.png'
-        });
+        var outputFile = path.join(
+            outputDir,
+            path.parse(original).name + '.png'
+        );
+
+        console.log('output', outputFile);
 
         im.convert([original, '-resize', '512x512', outputFile], (err, output) => {
             if(err)

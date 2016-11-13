@@ -34,3 +34,23 @@ describe('downloadFile', function () {
     });
 
 });
+
+describe('resizeImage', function () {
+
+    it('should resize input image', function() {
+
+        var dest = '/tmp';
+        var original = __dirname + '/resource/testImage.jpg';
+
+        if (fs.existsSync(dest + '/testImage.png')){
+            fs.unlinkSync(dest + '/testImage.png');
+        }
+
+        return utils.resizeImage(original, dest);
+    });
+
+    after(function(done) {
+        fs.unlink('/tmp/testImage.png', done);
+    });
+
+});
