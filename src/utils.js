@@ -13,7 +13,6 @@ function downloadFile(url, dest) {
         https.get(url, (response) => {
             response.pipe(file);
             file.on('finish', () => {
-                console.log("download done");
                 file.close(resolve(dest));  // close() is async, call cb after close completes.
             });
         }).on('error', (err) => { // Handle errors
