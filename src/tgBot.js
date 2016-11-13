@@ -61,23 +61,14 @@ class TgBot {
         };
 
         var p = new Promise( (resolve, reject) => {
-            client.get('https://api.telegram.org/bot' + this.token + '/sendMessage', args, (data, response) => {
+            //For some reason sinon mock doesn't work for utils.downloadFile inside client.get callback
+            var mockableDownloadFile = utils.downloadFile;
 
+            client.get('https://api.telegram.org/bot' + this.token + '/getFile', args, (data, response) => {
                 var dest = this.imageDir + "image.png";
-                var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.file_path;
+                var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.result.file_path;
 
-
-                var file = fs.createWriteStream(dest);
-
-                https.get(url, (response) => {
-                    response.pipe(file);
-                    file.on('finish', () => {
-                        file.close(resolve(dest));  // close() is async, call cb after close completes.
-                    });
-                }).on('error', (err) => { // Handle errors
-                    fs.unlink(dest); // Delete the file async. (But we don't check the result)
-                    reject(err);
-                });
+                mockableDownloadFile(url, dest).then(resolve, reject);
 
             }).on('error', (err) => {
                 reject(err);
@@ -100,7 +91,8 @@ class TgBot {
 
         var p = new Promise( (resolve, reject) => {
             client.post('https://api.telegram.org/bot' + this.token + '/sendMessage', args, (data, response) => {
-                resolve(data);
+                if(response.statusCode != 200) reject(data);
+                else resolve(data);
             }).on('error', (err) => {
                 reject(err);
             });

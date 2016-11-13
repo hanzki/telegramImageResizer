@@ -32,7 +32,7 @@ module.exports.handler = (event, context, callback) => {
     }
 
     var update = event.body ? JSON.parse(event.body) : undefined;
-    //console.log("received update: ", update);
+    console.log("received update: ", update);
 
     var updateProcess = update && update.update_id ? bot.processUpdate(update) : Promise.reject();
 
