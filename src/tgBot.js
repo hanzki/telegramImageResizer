@@ -6,7 +6,10 @@
 
 const https = require('https');
 const fs = require('fs');
+const restler = require('restler');
 const Client = require('node-rest-client').Client;
+
+const utils = require('./utils');
 
 const client = new Client();
 
@@ -14,6 +17,7 @@ class TgBot {
 
     constructor(token) {
         this.token = token;
+        this.imageDir = '/tmp/';
     }
 
     processUpdate(update) {
@@ -31,9 +35,9 @@ class TgBot {
         var result;
 
         if(msg.photo) {
-            result = this.processPhoto(msg.photo[0].file_id);
+            result = this.processPhoto(msg.chat.id, msg.photo[0].file_id);
         } else if (msg.document) {
-            result = this.processPhoto(msg.document.file_id);
+            result = this.processPhoto(msg.chat.id, msg.document.file_id);
         } else {
             result = this.sendMessage(msg.chat.id, "Send me an image");
         }
@@ -41,15 +45,17 @@ class TgBot {
         return result;
     }
 
-    processPhoto(fileId) {
-        return this.downloadFile(fileId);
+    processPhoto(chatId, fileId) {
+        var p = this.getFile(fileId)
+            .then((image) => {
+                return this.sendFile(chatId, image);
+            });
+
+        return p;
     }
 
-    downloadFile(fileId) {
+    getFile(fileId) {
 
-        return Promise.resolve();
-
-        /*
         var args = {
             parameters: { file_id: fileId }
         };
@@ -57,8 +63,10 @@ class TgBot {
         var p = new Promise( (resolve, reject) => {
             client.get('https://api.telegram.org/bot' + this.token + '/sendMessage', args, (data, response) => {
 
-                var dest = "image.png";
+                var dest = this.imageDir + "image.png";
                 var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.file_path;
+
+
                 var file = fs.createWriteStream(dest);
 
                 https.get(url, (response) => {
@@ -77,7 +85,6 @@ class TgBot {
         });
 
         return p;
-        */
 
     }
 
@@ -104,6 +111,27 @@ class TgBot {
 
     sendFile(chatId, file) {
 
+        var url = 'https://api.telegram.org/bot' + this.token + '/sendDocument';
+
+        var p = new Promise((resolve, reject) => {
+            fs.stat(file, (err, stats) => {
+                restler.post(url, {
+                    multipart: true,
+                    data: {
+                        chat_id: chatId,
+                        document: restler.file(file, null, stats.size, null, "image/png")
+                    }
+                }).on("complete", function (result) {
+                    if(result instanceof Error) {
+                        reject(result);
+                    } else {
+                        resolve(result);
+                    }
+                });
+            });
+        });
+
+        return p;
     }
 
 }

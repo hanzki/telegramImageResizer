@@ -6,10 +6,9 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const tgRequestHandler = require('./../src/tgRequestHandler');
 const TgBot = require('./../src/tgBot');
 
-describe('TgRequestHandler', function() {
+describe('TgBot', function() {
 
     describe('#processUpdate', function () {
         const bot = new TgBot("test-token");
