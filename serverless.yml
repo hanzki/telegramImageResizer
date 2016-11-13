@@ -53,24 +53,6 @@ functions:
           path: invoke
           method: post
 
-  TgImageResizer:
-    handler: src/handler.hello
-    events:
-      - s3:
-          bucket: tg-img-resizer-images
-          event: s3:ObjectCreated:*
-          rules:
-            - prefix: originals/
-
-  TgMessenger:
-    handler: src/handler.hello
-    events:
-      - s3:
-          bucket: tg-img-resizer-images
-          event: s3:ObjectCreated:*
-          rules:
-            - prefix: processed/
-
 #     - s3: ${env:BUCKET}
 #     - schedule: rate(10 minutes)
 #     - sns: greeter-topic
