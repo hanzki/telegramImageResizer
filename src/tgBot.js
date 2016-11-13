@@ -37,7 +37,8 @@ class TgBot {
         var result;
 
         if(msg.photo) {
-            result = this.processPhoto(msg.chat.id, msg.photo[0].file_id);
+            var largestPhoto = msg.photo.sort((p1, p2) => p2.width * p2.height - p1.width * p1.height)[0];
+            result = this.processPhoto(msg.chat.id, largestPhoto.file_id);
         } else if (msg.document) {
             result = this.processPhoto(msg.chat.id, msg.document.file_id);
         } else {
