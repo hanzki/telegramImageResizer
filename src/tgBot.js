@@ -49,6 +49,8 @@ class TgBot {
             result = this.processPhoto(msg.chat.id, largestPhoto.file_id, 'image/jpeg');
         } else if (msg.document && msg.document.mime_type.startsWith('image/')) {
             result = this.processPhoto(msg.chat.id, msg.document.file_id, msg.document.mime_type);
+        } else if (msg.text && msg.text.startsWith('http')) {
+            result = this.processLink(msg.chat.id, msg.text);
         } else {
             result = this.sendMessage(msg.chat.id, "Send me an image");
         }
@@ -64,6 +66,10 @@ class TgBot {
             });
 
         return p;
+    }
+
+    processLink(chatId, link) {
+        return this.sendMessage(chatId, "Sorry I can't process links yet");
     }
 
     getFile(fileId) {
