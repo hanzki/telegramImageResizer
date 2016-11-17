@@ -50,7 +50,7 @@ class TgBot {
             result = this.processPhoto(msg.chat.id, largestPhoto.file_id, 'image/jpeg');
         } else if (msg.document && msg.document.mime_type.startsWith('image/')) {
             result = this.processPhoto(msg.chat.id, msg.document.file_id, msg.document.mime_type);
-        } else if (msg.text && msg.entities.find(_ => _.type === "url")) {
+        } else if (msg.text && msg.entities && msg.entities.find(_ => _.type === "url")) {
             var entity = msg.entities.find(_ => _.type === "url");
             result = this.processLink(msg.chat.id, msg.text.substr(entity.offset, entity.length));
         } else {
