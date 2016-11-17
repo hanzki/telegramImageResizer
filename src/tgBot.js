@@ -17,10 +17,10 @@ const client = new Client();
 
 class TgBot {
 
-    constructor(token) {
+    constructor(token, dir) {
         this.token = token;
-        this.imageDir = '/tmp/images/';
-        this.outputDir = '/tmp/output/';
+        this.imageDir = dir + 'images/';
+        this.outputDir = dir + 'output/';
 
         if (!fs.existsSync(this.imageDir)){
             fs.mkdirSync(this.imageDir);

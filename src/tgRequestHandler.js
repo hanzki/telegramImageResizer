@@ -5,10 +5,10 @@
 'use strict';
 
 require('dotenv').config();
+const fs = require('fs-extra')
 const TgBot = require('./tgBot');
 
 const token = process.env.TELEGRAM_BOT_TOKEN;
-const bot = new TgBot(token);
 
 
 module.exports.handler = (event, context, callback) => {
@@ -34,13 +34,24 @@ module.exports.handler = (event, context, callback) => {
     var update = event.body ? JSON.parse(event.body) : undefined;
     console.log("received update: ", update);
 
+    //remove old directories
+    fs.remove('/tmp/images');
+    fs.remove('/tmp/output');
+
+    const dir = '/tmp/' + (update && update.update_id ? update.update_id + "/" : "none/");
+    fs.emptydirSync(dir);
+
+    const bot = new TgBot(token, dir);
+
     var updateProcess = update && update.update_id ? bot.processUpdate(update) : Promise.reject();
 
     updateProcess.then(function () {
         console.log("Everything went fine");
+        fs.remove(dir);
         callback(null, okResponse);
     }).catch(function (err) {
         console.error("oops an error", err);
+        fs.remove(dir);
         callback(null, badResponse);
     });
 };
