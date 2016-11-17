@@ -48,7 +48,9 @@ describe('TgBot', function() {
                 })
                 .reply(200);
 
-            return bot.sendMessage(chatId, message);
+            return bot.sendMessage(chatId, message).then(_ => {
+                tgSendMessage.done();
+            });;
 
         });
 
@@ -65,7 +67,10 @@ describe('TgBot', function() {
                 .reply(500);
 
             return bot.sendMessage(chatId, message)
-                .then(_ => Promise.reject('expected error'), _ => Promise.resolve());
+                .then(_ => Promise.reject('expected error'), _ => Promise.resolve())
+                .then(_ => {
+                    tgSendMessage.done();
+                });
 
         });
 
@@ -95,6 +100,8 @@ describe('TgBot', function() {
 
             return bot.getFile(fileId).then(() => {
                 sinon.assert.calledOnce(downloadFileStub);
+            }).then(_ => {
+                tgGetFile.done();
             });
 
         }));
@@ -112,10 +119,38 @@ describe('TgBot', function() {
                 .post('/bot' + token + '/sendDocument', _ => true)
                 .reply(200);
 
-            return bot.sendFile(chatId, file, 'text/plain');
+            return bot.sendFile(chatId, file, 'text/plain').then(_ => {
+                tgSendDocument.done();
+            });
 
         });
 
+    });
+
+    describe('#processLink', function () {
+
+        it('should test if link is image', sinon.test(function () {
+
+            const chatId = 12345;
+            const link = 'https://example.com/image.png';
+
+            const headImage = nock('https://example.com')
+                .head('/image.png')
+                .reply(200,
+                '',
+                {'Content-Type': 'image/png'});
+
+            var sendMessageStub = this.stub(TgBot.prototype, 'sendMessage', () => Promise.resolve());
+            var sendFileStub = this.stub(TgBot.prototype, 'sendFile', () => Promise.resolve());
+            var downloadFileStub = this.stub(utils, 'downloadFile', () => Promise.resolve());
+            var resizeImageStub = this.stub(utils, 'resizeImage', () => Promise.resolve());
+
+
+            return bot.processLink(chatId, link).then(_ => {
+                headImage.done()
+            });
+
+        }));
 
     });
 });

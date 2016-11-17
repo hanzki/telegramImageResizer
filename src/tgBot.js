@@ -9,6 +9,7 @@ const fs = require('fs');
 const restler = require('restler');
 const path = require('path');
 const Client = require('node-rest-client').Client;
+const mime = require('mime-types')
 
 const utils = require('./utils');
 
@@ -49,8 +50,9 @@ class TgBot {
             result = this.processPhoto(msg.chat.id, largestPhoto.file_id, 'image/jpeg');
         } else if (msg.document && msg.document.mime_type.startsWith('image/')) {
             result = this.processPhoto(msg.chat.id, msg.document.file_id, msg.document.mime_type);
-        } else if (msg.text && msg.text.startsWith('http')) {
-            result = this.processLink(msg.chat.id, msg.text);
+        } else if (msg.text && msg.entities.find(_ => _.type === "url")) {
+            var entity = msg.entities.find(_ => _.type === "url");
+            result = this.processLink(msg.chat.id, msg.text.substr(entity.offset, entity.length));
         } else {
             result = this.sendMessage(msg.chat.id, "Send me an image");
         }
@@ -69,7 +71,34 @@ class TgBot {
     }
 
     processLink(chatId, link) {
-        return this.sendMessage(chatId, "Sorry I can't process links yet");
+        return new Promise( (resolve, reject) => {
+            //For some reason sinon mock doesn't work for utils inside callback
+            var _downloadFile = utils.downloadFile;
+            var _resizeImage = utils.resizeImage;
+            var _sendFile = this.sendFile;
+
+            restler.head(link)
+                .on("complete", (result, response) => {
+                    if(result instanceof Error) {
+                        reject(result);
+                    } if( ! response.statusCode.toString().startsWith("2")) {
+                        resolve(this.sendMessage(chatId, "I don't seem to be able to connect that url."));
+                    } if( ! (response.headers['content-type'] && response.headers['content-type'].startsWith("image/"))) {
+                        resolve(this.sendMessage(chatId, "This doesn't look like an url of an image."));
+                    } else {
+                        var contentType = response.headers['content-type'];
+                        var dest = this.imageDir + 'image.' + mime.extension(contentType);
+
+                        var p = _downloadFile(link, dest)
+                            .then(image => _resizeImage(image, this.outputDir))
+                            .then(image => _sendFile(chatId, image, 'image/png'));
+
+                        resolve(p);
+                    }
+                });
+        });
+
+        //return this.sendMessage(chatId, "Sorry I can't process links yet");
     }
 
     getFile(fileId) {
@@ -88,7 +117,7 @@ class TgBot {
                 var dest = this.imageDir + path.basename(data.result.file_path);
                 var url = 'https://api.telegram.org/file/bot' + this.token + '/' + data.result.file_path;
 
-                mockableDownloadFile(url, dest).then(resolve, reject);
+                resolve(mockableDownloadFile(url, dest));
 
             }).on('error', (err) => {
                 reject(err);
