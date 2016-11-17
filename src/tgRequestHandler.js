@@ -52,6 +52,6 @@ module.exports.handler = (event, context, callback) => {
     }).catch(function (err) {
         console.error("oops an error", err);
         fs.removeSync(dir);
-        callback(null, badResponse);
+        callback(null, okResponse);
     });
 };
