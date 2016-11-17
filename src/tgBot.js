@@ -81,9 +81,9 @@ class TgBot {
                 .on("complete", (result, response) => {
                     if(result instanceof Error) {
                         reject(result);
-                    } if( ! response.statusCode.toString().startsWith("2")) {
+                    } else if( ! response.statusCode.toString().startsWith("2")) {
                         resolve(this.sendMessage(chatId, "I don't seem to be able to connect that url."));
-                    } if( ! (response.headers['content-type'] && response.headers['content-type'].startsWith("image/"))) {
+                    } else if( ! (response.headers['content-type'] && response.headers['content-type'].startsWith("image/"))) {
                         resolve(this.sendMessage(chatId, "This doesn't look like an url of an image."));
                     } else {
                         var contentType = response.headers['content-type'];
