@@ -35,8 +35,8 @@ module.exports.handler = (event, context, callback) => {
     console.log("received update: ", update);
 
     //remove old directories
-    fs.remove('/tmp/images');
-    fs.remove('/tmp/output');
+    //fs.remove('/tmp/images');
+    //fs.remove('/tmp/output');
 
     const dir = '/tmp/' + (update && update.update_id ? update.update_id + "/" : "none/");
     fs.emptydirSync(dir);
