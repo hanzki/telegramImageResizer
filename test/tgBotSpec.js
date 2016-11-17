@@ -32,6 +32,38 @@ describe('TgBot', function() {
             });
         }));
 
+        /*it('end to end test', sinon.test(function() {
+            const update = {
+                update_id: 123,
+                message: {
+                    "message_id": 123,
+                    "chat": {
+                        "id": 123456
+                    },
+                    "date": 1479314083,
+                    "text": "http://example.com/image.png",
+                    "entities": [
+                        {
+                            "type": "url",
+                            "offset": 0,
+                            "length": 75
+                        }
+                    ]
+                }
+            };
+
+            const tgSendDocument = nock('https://api.telegram.org')
+                .post('/bot' + token + '/sendDocument', _ => true)
+                .reply(200);
+
+            var downloadFileStub = this.spy(utils, 'downloadFile');
+
+            return bot.processUpdate(update).then((result) => {
+                console.log('result', result);
+                sinon.assert.calledOnce(downloadFileStub);
+            });
+        })); */
+
     });
 
     describe('#sendMessage', function () {

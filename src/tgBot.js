@@ -75,7 +75,7 @@ class TgBot {
             //For some reason sinon mock doesn't work for utils inside callback
             var _downloadFile = utils.downloadFile;
             var _resizeImage = utils.resizeImage;
-            var _sendFile = this.sendFile;
+            var _sendFile = this.sendFile.bind(this);
 
             restler.head(link)
                 .on("complete", (result, response) => {
@@ -151,6 +151,8 @@ class TgBot {
     }
 
     sendFile(chatId, file, mimeType) {
+
+        console.log("this is me", this);
 
         var url = 'https://api.telegram.org/bot' + this.token + '/sendDocument';
 
