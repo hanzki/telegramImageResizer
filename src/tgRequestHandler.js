@@ -37,8 +37,10 @@ module.exports.handler = (event, context, callback) => {
     var updateProcess = update && update.update_id ? bot.processUpdate(update) : Promise.reject();
 
     updateProcess.then(function () {
+        console.log("Everything went fine");
         callback(null, okResponse);
     }).catch(function (err) {
+        console.error("oops an error", err);
         callback(null, badResponse);
     });
 };
