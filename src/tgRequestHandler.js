@@ -47,11 +47,11 @@ module.exports.handler = (event, context, callback) => {
 
     updateProcess.then(function () {
         console.log("Everything went fine");
-        fs.remove(dir);
+        fs.removeSync(dir);
         callback(null, okResponse);
     }).catch(function (err) {
         console.error("oops an error", err);
-        fs.remove(dir);
+        fs.removeSync(dir);
         callback(null, badResponse);
     });
 };
