@@ -21,4 +21,13 @@ export class TelegramClient {
         }
     }
 
+    public async downloadFile(fileId: string, directory: string): Promise<null | string> {
+        try {
+            return await this.bot.downloadFile(fileId, directory)
+        } catch (e) {
+            console.error(`Couldn't download telegram file #${fileId}`, e);
+            return null;
+        }
+    }
+
 }

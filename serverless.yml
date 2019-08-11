@@ -21,17 +21,25 @@ provider:
       Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:provider.environment.RESIZE_REQUEST_QUEUE_NAME}"
 
 functions:
-  hello:
+  receptionist:
     handler: handler.receiveTelegram
     events:
       - http:
           path: hello
           method: post
           cors: true
+  resize:
+    handler: handler.processResizeRequest
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ResizeRequestQueue
+              - Arn
 
 resources:
   Resources:
-    resizeRequestQueue:
+    ResizeRequestQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: ${self:provider.environment.RESIZE_REQUEST_QUEUE_NAME}

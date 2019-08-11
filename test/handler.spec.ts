@@ -23,7 +23,7 @@ describe("handler", () => {
 
             const result = (await handler.receiveTelegram(event, null, null)) as APIGatewayProxyResult;
 
-            expect(result.statusCode).to.equal(400);
+            expect(result.statusCode).to.equal(200);
             expect(result.body).to.equal('BAD REQUEST');
         });
 

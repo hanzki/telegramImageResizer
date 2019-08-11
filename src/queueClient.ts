@@ -11,7 +11,7 @@ export class QueueClient {
         this.sqs = new AWS.SQS({apiVersion: '2012-11-05'});
     }
 
-    public async insertMessage(message: QueueMessage): Promise<boolean> {
+    public async insertMessage(message: ResizeRequest): Promise<boolean> {
         try {
             const params = {
                 MessageBody: JSON.stringify(message),
@@ -39,7 +39,7 @@ export class QueueClient {
 
 }
 
-export interface QueueMessage {
+export interface ResizeRequest {
     chatId: number,
     sender: null | {
         username: null | string,

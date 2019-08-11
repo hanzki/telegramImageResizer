@@ -7,7 +7,11 @@
     "test": "mocha -r ts-node/register ./**/*.spec.ts"
   },
   "dependencies": {
+    "@types/request": "^2.48.2",
+    "@types/request-promise-native": "^1.0.16",
     "node-telegram-bot-api": "^0.30.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {

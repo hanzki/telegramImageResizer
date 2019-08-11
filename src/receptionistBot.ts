@@ -1,4 +1,4 @@
-import {QueueClient, QueueMessage} from "./queueClient";
+import {QueueClient, ResizeRequest} from "./queueClient";
 import {Message, Update} from "node-telegram-bot-api";
 import {TelegramClient} from "./telegramClient";
 
@@ -23,7 +23,7 @@ export class ReceptionistBot {
                 const imageFileId = this.extractImageFileId(update.message);
 
                 if (imageUrl || imageFileId) {
-                    const queueMsg: QueueMessage = {
+                    const queueMsg: ResizeRequest = {
                         chatId: chatId,
                         sender: this.extractSender(update.message),
                         imageUrl: imageUrl,
