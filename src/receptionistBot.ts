@@ -6,9 +6,9 @@ export class ReceptionistBot {
     private queueClient;
     private telegramClient;
 
-    constructor(telegramBotToken: string) {
+    constructor(telegramBotToken: string, queueName: string) {
         this.telegramClient = new TelegramClient(telegramBotToken);
-        this.queueClient = new QueueClient();
+        this.queueClient = new QueueClient(queueName);
     }
 
     public async receiveUpdate(update: Update): Promise<boolean> {

@@ -12,10 +12,12 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
+    "@types/aws-sdk": "^2.7.0",
     "@types/chai": "^4.2.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.12.18",
     "@types/node-telegram-bot-api": "^0.31.0",
+    "aws-sdk": "^2.507.0",
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
     "serverless-webpack": "^5.2.0",

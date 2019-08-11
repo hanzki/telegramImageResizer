@@ -16,7 +16,7 @@ describe("receptionistBot", () => {
             telegramClientMock = ImportMock.mockClass(TelegramClientModule, 'TelegramClient');
             queueClientMock = ImportMock.mockClass(QueueClientModule, 'QueueClient');
 
-            receptionistBot = new ReceptionistBot("TEST");
+            receptionistBot = new ReceptionistBot("TEST", "TEST_QUEUE");
         });
 
         afterEach('restore dependencies', function () {

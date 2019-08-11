@@ -12,6 +12,13 @@ provider:
   runtime: nodejs10.x
   environment:
     TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
+    RESIZE_REQUEST_QUEUE_NAME: ${self:service}-resize_requests-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:SendMessage
+        - sqs:GetQueueUrl
+      Resource: "arn:aws:sqs:${opt:region, self:provider.region}:*:${self:provider.environment.RESIZE_REQUEST_QUEUE_NAME}"
 
 functions:
   hello:
@@ -22,4 +29,9 @@ functions:
           method: post
           cors: true
 
-
+resources:
+  Resources:
+    resizeRequestQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:provider.environment.RESIZE_REQUEST_QUEUE_NAME}

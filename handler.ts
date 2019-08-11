@@ -4,9 +4,10 @@ import {ReceptionistBot} from "./src/receptionistBot";
 import {Update} from "node-telegram-bot-api";
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const RESIZE_REQUEST_QUEUE_NAME = process.env.RESIZE_REQUEST_QUEUE_NAME;
 
 export const receiveTelegram: APIGatewayProxyHandler = async (event) => {
-  const receptionistBot = new ReceptionistBot(TELEGRAM_BOT_TOKEN);
+  const receptionistBot = new ReceptionistBot(TELEGRAM_BOT_TOKEN, RESIZE_REQUEST_QUEUE_NAME);
 
   let update: Update;
   try {
