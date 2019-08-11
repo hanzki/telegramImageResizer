@@ -1,0 +1,31 @@
+{
+  "name": "telegramimageresizertypescript",
+  "version": "1.0.0",
+  "description": "Serverless webpack example using Typescript",
+  "main": "handler.js",
+  "scripts": {
+    "test": "mocha -r ts-node/register ./**/*.spec.ts"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.30.0",
+    "source-map-support": "^0.5.10"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.17",
+    "@types/chai": "^4.2.0",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^10.12.18",
+    "@types/node-telegram-bot-api": "^0.31.0",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.0",
+    "serverless-webpack": "^5.2.0",
+    "sinon": "~7.3",
+    "ts-loader": "^5.3.3",
+    "ts-mock-imports": "^1.2.6",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.2.4",
+    "webpack": "^4.29.0"
+  },
+  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
+  "license": "MIT"
+}

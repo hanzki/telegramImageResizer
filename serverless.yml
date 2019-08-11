@@ -1,0 +1,23 @@
+service:
+  name: telegramimageresizertypescript
+#app: your-app-name
+#tenant: your-tenant-name
+
+# Add the serverless-webpack plugin
+plugins:
+  - serverless-webpack
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  environment:
+    TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
+
+functions:
+  hello:
+    handler: handler.receiveTelegram
+    events:
+      - http:
+          path: hello
+          method: post
+          cors: true
