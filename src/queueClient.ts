@@ -7,16 +7,14 @@ export class QueueClient {
 }
 
 export interface QueueMessage {
-    chat: {
-        chatId: number,
-        sender: null | {
-            username: null | string,
-            name: null | string
-        },
-        imageUrl: null | string,
-        imageFile: null | {
-            fileId: string,
-            mimeType: null | string
-        }
+    chatId: number,
+    sender: null | {
+        username: null | string,
+        name: null | string
+    },
+    imageUrl: null | string,
+    imageFile: null | {
+        fileId: string,
+        mimeType?: null | string
     }
 }
