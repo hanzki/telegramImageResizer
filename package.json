@@ -9,6 +9,7 @@
   "dependencies": {
     "@types/request": "^2.48.2",
     "@types/request-promise-native": "^1.0.16",
+    "imagemagick": "^0.1.3",
     "node-telegram-bot-api": "^0.30.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
