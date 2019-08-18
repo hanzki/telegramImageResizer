@@ -4,7 +4,8 @@ import * as path from "path";
 import {promisify} from 'util'
 import {ImageFormat, ImageResizer} from "../src/imageResizer";
 import * as crypto from "crypto";
-import * as im from 'imagemagick';
+import * as gm from 'gm';
+import {ImageInfo} from "gm";
 
 const expect = chai.expect;
 
@@ -12,7 +13,13 @@ const mkdtemp = promisify(fs.mkdtemp);
 const rmdir = promisify(fs.rmdir);
 const readdir = promisify(fs.readdir);
 const unlink = promisify(fs.unlink);
-const identify = promisify(im.identify);
+const identify: (string) => Promise<ImageInfo> = (filePath) => new Promise((resolve, reject) => {
+    try {
+        gm(filePath).identify((err, value) => err ? reject(err) : resolve(value));
+    } catch (e) {
+        reject(e);
+    }
+});
 
 describe("imageResizer", () => {
     describe("resizeImage", () => {
@@ -54,8 +61,8 @@ describe("imageResizer", () => {
 
             const outputFileInfo = await identify(outputFile);
 
-            expect(outputFileInfo.width <= widthConstraint);
-            expect(outputFileInfo.height <= heightConstraint);
+            expect(outputFileInfo.size.width <= widthConstraint);
+            expect(outputFileInfo.size.height <= heightConstraint);
         });
 
         it('should convert the image to specified file type if necessary', async () => {
@@ -67,7 +74,7 @@ describe("imageResizer", () => {
 
             const outputFileInfo = await identify(outputFile);
 
-            expect(outputFileInfo.format.toLowerCase === desiredImageFormat);
+            expect(outputFileInfo.format.toLowerCase() === desiredImageFormat);
         });
     });
 });

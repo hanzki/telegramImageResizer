@@ -1,8 +1,5 @@
-import * as im from 'imagemagick';
 import * as path from "path";
-import * as util from 'util';
-
-const convert = util.promisify(im.convert);
+import * as gm from 'gm';
 
 export class ImageResizer {
 
@@ -22,12 +19,31 @@ export class ImageResizer {
         outputType: ImageFormat,
         maxBytes?: number
     ): Promise<string> {
-        const outputFile = path.basename(imageFile, path.extname(imageFile)) + '.' + outputType;
-        const outputFilePath = path.join(destination, outputFile);
-        const geometry = Math.floor(width) + 'x' + Math.floor(height);
+        try {
+            const outputFile = path.basename(imageFile, path.extname(imageFile)) + '.' + outputType;
+            const outputFilePath = path.join(destination, outputFile);
 
-        await convert([imageFile, '-resize', geometry, outputFilePath]);
-        return outputFilePath;
+            const resizePromise = new Promise<string>((resolve, reject) => {
+                try {
+                    gm(imageFile)
+                        .resize(width, height)
+                        .write(outputFilePath, err => {
+                            if(err) {
+                                reject(err);
+                            } else {
+                                resolve(outputFilePath);
+                            }
+                        });
+                } catch (e) {
+                    reject(e);
+                }
+            });
+
+            return await resizePromise;
+        } catch (e) {
+            console.error("Image resize failed with error:", e);
+            throw e;
+        }
     }
 }
 

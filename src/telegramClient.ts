@@ -30,4 +30,14 @@ export class TelegramClient {
         }
     }
 
+    public async sendFile(chatId: number, file: string): Promise<boolean> {
+        try {
+            await this.bot.sendDocument(chatId, file);
+            return true;
+        } catch (e) {
+            console.error(`Couldn't upload a file to chat #${chatId}`, e);
+            return false;
+        }
+    }
+
 }

@@ -30,6 +30,8 @@ functions:
           cors: true
   resize:
     handler: handler.processResizeRequest
+    layers:
+      - arn:aws:lambda:${opt:region, self:provider.region}:175033217214:layer:graphicsmagick:2
     events:
       - sqs:
           arn:
