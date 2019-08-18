@@ -86,8 +86,12 @@ export class ReceptionistBot {
             const largestPhoto = message.photo.sort(byPhotoSize)[0];
             return largestPhoto.file_id
         } else if (message.document) {
-            // TODO: Check for acceptable file types
-            return message.document.file_id
+            if(this.SUPPORTED_FILE_TYPES.includes(message.document.mime_type)) {
+                return message.document.file_id
+            } else {
+                console.log(console.log(`Unsupported file type: ${message.document.mime_type}`));
+                return null;
+            }
         } else {
             return null
         }
