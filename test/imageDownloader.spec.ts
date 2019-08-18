@@ -50,7 +50,7 @@ describe("imageDownloader", () => {
         });
     });
 
-    describe.skip("downloadInternetImage", () => {
+    describe("downloadInternetImage", () => {
         let telegramClientMock: MockManager<TelegramClientModule.TelegramClient>;
         let imageDownloader: ImageDownloader;
         let testDir;
@@ -80,7 +80,17 @@ describe("imageDownloader", () => {
 
             const result = await imageDownloader.downloadInternetImage(imageUrl, testDir);
 
-            expect(await stat(result)).to.be.true;
+            const imageStats = await stat(result);
+            expect(imageStats && imageStats.isFile()).to.be.true;
+        });
+
+        it("should give the filename appropriate file type suffix", async () => {
+
+            const imageUrl = "https://upload.wikimedia.org/wikipedia/commons/4/4e/Single_apple.png";
+
+            const result = await imageDownloader.downloadInternetImage(imageUrl, testDir);
+
+            expect(result.endsWith(".png")).to.be.true;
         });
     });
 });
