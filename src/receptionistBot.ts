@@ -23,13 +23,12 @@ export class ReceptionistBot {
                 const imageFileId = this.extractImageFileId(update.message);
 
                 if (imageUrl || imageFileId) {
+                    const imageFile = imageFileId ? { fileId: imageFileId } : null;
                     const queueMsg: ResizeRequest = {
                         chatId: chatId,
                         sender: this.extractSender(update.message),
                         imageUrl: imageUrl,
-                        imageFile: {
-                            fileId: imageFileId
-                        }
+                        imageFile: imageFile
                     };
 
                     await this.queueClient.insertMessage(queueMsg);
