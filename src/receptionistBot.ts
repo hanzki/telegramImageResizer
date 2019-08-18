@@ -27,9 +27,6 @@ export class ReceptionistBot {
             if (update.message) {
                 const chatId = update.message.chat.id;
 
-                // TODO: Remove this debug message
-                await this.telegramClient.sendMessage(chatId, JSON.stringify(update.message, null, 2));
-
                 const imageUrl = this.extractImageUrl(update.message);
                 const imageFileId = this.extractImageFileId(update.message);
 
