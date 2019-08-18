@@ -5,6 +5,8 @@ import {ImageDownloader} from "../src/imageDownloader";
 import * as fs from "fs";
 import {promisify} from 'util'
 import * as path from "path";
+import * as gm from "gm";
+import {ImageInfo} from "gm";
 
 const expect = chai.expect;
 
@@ -13,6 +15,14 @@ const rmdir = promisify(fs.rmdir);
 const readdir = promisify(fs.readdir);
 const unlink = promisify(fs.unlink);
 const stat = promisify(fs.stat);
+
+const identify: (string) => Promise<ImageInfo> = (filePath) => new Promise((resolve, reject) => {
+    try {
+        gm(filePath).identify((err, value) => err ? reject(err) : resolve(value));
+    } catch (e) {
+        reject(e);
+    }
+});
 
 describe("imageDownloader", () => {
     describe("downloadTelegramImage", () => {
@@ -81,7 +91,8 @@ describe("imageDownloader", () => {
             const result = await imageDownloader.downloadInternetImage(imageUrl, testDir);
 
             const imageStats = await stat(result);
-            expect(imageStats && imageStats.isFile()).to.be.true;
+
+            expect(imageStats && imageStats.isFile() && imageStats.size > 0).to.be.true;
         });
 
         it("should give the filename appropriate file type suffix", async () => {
@@ -92,5 +103,17 @@ describe("imageDownloader", () => {
 
             expect(result.endsWith(".png")).to.be.true;
         });
+
+        it("should download an image uncorrupted", async () => {
+
+            const imageUrl = "https://images-na.ssl-images-amazon.com/images/I/81xQBb5jRzL._SY355_.jpg";
+
+            const result = await imageDownloader.downloadInternetImage(imageUrl, testDir);
+
+            const imageInfo = await identify(result);
+
+            expect(imageInfo.format).to.equal('JPEG');
+        });
+
     });
 });

@@ -20,23 +20,20 @@ export class ImageDownloader {
     public downloadInternetImage(url: string, destination: string): Promise<string> {
         return new Promise((resolve, reject) => {
 
-            request(url, (error, response) => {
-                if(error) {
-                    console.error(`Error while downloading url "${url}"`, error);
-                    reject(error);
-                } else {
+            const req = request(url)
+                .on('response', response => {
                     const contentType = response.headers['content-type'];
                     const destinationFile = path.join(destination, "image." + mime.extension(contentType));
+                    const file = fs.createWriteStream(destinationFile);
 
-                    const writeStream = fs.createWriteStream(destinationFile);
-                    writeStream.on('finish', () => {
+                    req.pipe(file).on('finish', () => {
                         console.log(`downloaded ${destinationFile}`);
                         resolve(destinationFile);
-                    });
-
-                    response.pipe(writeStream);
-                }
-            });
+                    })
+                })
+                .on('error', (err) => {
+                    reject(err);
+                });
 
         });
     }
