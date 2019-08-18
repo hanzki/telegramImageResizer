@@ -37,4 +37,22 @@ export class ImageDownloader {
 
         });
     }
+
+    public getUrlContentType(url: string): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const options = {uri: url, method: "HEAD"};
+            request(options)
+                .on('response', response => {
+                    const contentType = response.headers['content-type'];
+                    if (contentType) {
+                        resolve(contentType)
+                    } else {
+                        reject(new Error("Couldn't receive content-type"));
+                    }
+                })
+                .on('error', (err) => {
+                    reject(err);
+                });
+        });
+    }
 }

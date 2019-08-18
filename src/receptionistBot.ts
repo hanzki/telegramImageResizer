@@ -1,15 +1,26 @@
 import {QueueClient, ResizeRequest} from "./queueClient";
 import {Message, Update} from "node-telegram-bot-api";
 import {TelegramClient} from "./telegramClient";
+import {ImageDownloader} from "./imageDownloader";
 
 export class ReceptionistBot {
     private queueClient;
     private telegramClient;
+    private imageDownloader;
 
     constructor(telegramBotToken: string, queueName: string) {
         this.telegramClient = new TelegramClient(telegramBotToken);
         this.queueClient = new QueueClient(queueName);
+        this.imageDownloader = new ImageDownloader(telegramBotToken);
     }
+
+    readonly SUPPORTED_FILE_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/bmp",
+        "image/gif",
+        "image/tiff"
+    ];
 
     public async receiveUpdate(update: Update): Promise<boolean> {
         try {
@@ -22,7 +33,9 @@ export class ReceptionistBot {
                 const imageUrl = this.extractImageUrl(update.message);
                 const imageFileId = this.extractImageFileId(update.message);
 
-                if (imageUrl || imageFileId) {
+                const validUrl = imageUrl && await this.validateUrl(imageUrl);
+
+                if (validUrl || imageFileId) {
                     const imageFile = imageFileId ? { fileId: imageFileId } : null;
                     const queueMsg: ResizeRequest = {
                         chatId: chatId,
@@ -53,6 +66,17 @@ export class ReceptionistBot {
             return message.text.substring(urlEntity.offset, urlEntity.offset + urlEntity.length);
         } else {
             return null;
+        }
+    }
+
+    async validateUrl(url: string): Promise<boolean> {
+        const contentType = await this.imageDownloader.getUrlContentType(url);
+
+        if(this.SUPPORTED_FILE_TYPES.includes(contentType)) {
+            return true;
+        } else {
+            console.log(`Unsupported file type: ${contentType}`);
+            return false;
         }
     }
 
