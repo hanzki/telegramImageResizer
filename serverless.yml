@@ -1,5 +1,5 @@
 service:
-  name: telegramimageresizertypescript
+  name: telegram-image-resizer
 #app: your-app-name
 #tenant: your-tenant-name
 
