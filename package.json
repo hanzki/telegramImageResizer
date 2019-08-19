@@ -4,7 +4,8 @@
   "description": "Telegram bot for making sticker creation easier by resizing images",
   "main": "handler.js",
   "scripts": {
-    "test": "mocha -r ts-node/register ./**/*.spec.ts"
+    "test": "mocha -r ts-node/register ./**/*.spec.ts",
+    "test-ci": "mocha -r ts-node/register --reporter mocha-junit-reporter ./**/*.spec.ts"
   },
   "dependencies": {
     "@types/request": "^2.48.2",
@@ -27,6 +28,7 @@
     "aws-sdk": "^2.507.0",
     "chai": "^4.2.0",
     "mocha": "^6.2.0",
+    "mocha-junit-reporter": "^1.23.1",
     "serverless-webpack": "^5.2.0",
     "sinon": "~7.3",
     "ts-loader": "^5.3.3",

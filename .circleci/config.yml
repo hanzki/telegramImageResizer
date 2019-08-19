@@ -1,0 +1,46 @@
+version: 2.1
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10
+    environment:
+      MOCHA_FILE: ./test-results/mocha/report.xml
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yarn install
+      - run:
+          name: Run tests
+          command: |
+            yarn test-ci
+      - store_test_results:
+          path: test-results
+
+  deploy-prod:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yarn global add serverless
+            yarn install
+      - run:
+          name: Deploy
+          command: |
+            echo "Not Implemented"
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+      - deploy-prod:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
