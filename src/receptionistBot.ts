@@ -19,7 +19,8 @@ export class ReceptionistBot {
         "image/png",
         "image/bmp",
         "image/gif",
-        "image/tiff"
+        "image/tiff",
+        "image/webp"
     ];
 
     public async receiveUpdate(update: Update): Promise<boolean> {
