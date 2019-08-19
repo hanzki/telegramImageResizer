@@ -1,7 +1,7 @@
 {
-  "name": "telegramimageresizertypescript",
-  "version": "1.0.0",
-  "description": "Serverless webpack example using Typescript",
+  "name": "telegram-image-resizer",
+  "version": "2.0.0",
+  "description": "Telegram bot for making sticker creation easier by resizing images",
   "main": "handler.js",
   "scripts": {
     "test": "mocha -r ts-node/register ./**/*.spec.ts"
@@ -35,6 +35,14 @@
     "typescript": "^3.2.4",
     "webpack": "^4.29.0"
   },
-  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
-  "license": "MIT"
+  "author": "Hannu Huhtanen",
+  "license": "CC-BY-4.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hanzki/telegramImageResizer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hanzki/telegramImageResizer/issues"
+  },
+  "homepage": "https://github.com/hanzki/telegramImageResizer#readme"
 }

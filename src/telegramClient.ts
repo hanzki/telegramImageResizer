@@ -16,7 +16,7 @@ export class TelegramClient {
             await this.bot.sendMessage(chatId, message);
             return true;
         } catch (e) {
-            console.error(`Couldn't send a telegram message to chat #${chatId}`, e);
+            console.error(`Couldn't send a telegram message to chat #${chatId}. Error code: ${e.code || e}`);
             return false;
         }
     }
@@ -25,7 +25,7 @@ export class TelegramClient {
         try {
             return await this.bot.downloadFile(fileId, directory)
         } catch (e) {
-            console.error(`Couldn't download telegram file #${fileId}`, e);
+            console.error(`Couldn't download telegram file #${fileId}. Error code: ${e.code || e}`);
             return null;
         }
     }
@@ -35,7 +35,7 @@ export class TelegramClient {
             await this.bot.sendDocument(chatId, file);
             return true;
         } catch (e) {
-            console.error(`Couldn't upload a file to chat #${chatId}`, e);
+            console.error(`Couldn't upload a file to chat #${chatId}. Error code: ${e.code || e}`);
             return false;
         }
     }

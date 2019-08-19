@@ -3,6 +3,7 @@ import {ImportMock, MockManager} from "ts-mock-imports";
 import {ReceptionistBot} from "../src/receptionistBot";
 import * as QueueClientModule from "../src/queueClient";
 import * as TelegramClientModule from "../src/telegramClient";
+import * as ImageDownloaderModule from "../src/imageDownloader";
 
 const expect = chai.expect;
 
@@ -10,18 +11,21 @@ describe("receptionistBot", () => {
     describe("receiveUpdate", () => {
         let telegramClientMock: MockManager<TelegramClientModule.TelegramClient>;
         let queueClientMock: MockManager<QueueClientModule.QueueClient>;
+        let imageDownloaderMock: MockManager<ImageDownloaderModule.ImageDownloader>;
         let receptionistBot: ReceptionistBot;
 
         beforeEach('mock out dependencies', function () {
             telegramClientMock = ImportMock.mockClass(TelegramClientModule, 'TelegramClient');
             queueClientMock = ImportMock.mockClass(QueueClientModule, 'QueueClient');
+            imageDownloaderMock = ImportMock.mockClass(ImageDownloaderModule, 'ImageDownloader');
 
             receptionistBot = new ReceptionistBot("TEST", "TEST_QUEUE");
         });
 
         afterEach('restore dependencies', function () {
-            telegramClientMock.restore();
+            imageDownloaderMock.restore();
             queueClientMock.restore();
+            telegramClientMock.restore();
         });
 
         it("should add message to queue if the update contains image URL", async () => {
@@ -49,6 +53,7 @@ describe("receptionistBot", () => {
 
             const sendMessageStub = telegramClientMock.mock("sendMessage", Promise.resolve(true));
             const insertMessageStub = queueClientMock.mock("insertMessage", Promise.resolve(true));
+            const getUrlContentTypeStub = imageDownloaderMock.mock("getUrlContentType", Promise.resolve("image/jpeg"));
 
             const result = await receptionistBot.receiveUpdate(update);
 
@@ -104,7 +109,9 @@ describe("receptionistBot", () => {
                         last_name: "Doe"
                     },
                     document: {
-                        file_id: testFileId
+                        file_name: "image.jpg",
+                        file_id: testFileId,
+                        mime_type: "image/jpeg"
                     }
                 }
             };
