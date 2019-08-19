@@ -20,7 +20,21 @@ export const receiveTelegram: APIGatewayProxyHandler = async (event) => {
 
   if(update && update.update_id) {
     try {
-      const success = await receptionistBot.receiveUpdate(update);
+      const timer = new Promise((resolve, reject) => {
+        let wait = setTimeout(() => {
+            clearTimeout(wait);
+            resolve("TIMEOUT");
+        }, 5000);
+      });
+      const success = await Promise.race([
+          receptionistBot.receiveUpdate(update),
+          timer
+      ]);
+
+      if (success === "TIMEOUT") {
+          console.error(`Timeout while processing update #${update.update_id}`);
+          return { statusCode: 200, body: "TIMEOUT" }
+      }
       if (success) {
           return { statusCode: 200, body: "OK" };
       } else {
