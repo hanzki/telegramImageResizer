@@ -3,6 +3,7 @@ import * as request from "request";
 import * as fs from "fs";
 import * as path from "path";
 import * as mime from "mime-types";
+import { Logger } from "./logger";
 
 
 export class ImageDownloader {
@@ -27,7 +28,7 @@ export class ImageDownloader {
                     const file = fs.createWriteStream(destinationFile);
 
                     req.pipe(file).on('finish', () => {
-                        console.log(`downloaded ${destinationFile}`);
+                        Logger.info(`downloaded ${destinationFile}`);
                         resolve(destinationFile);
                     })
                 })

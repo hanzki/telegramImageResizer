@@ -2,6 +2,7 @@
 process.env.NTBA_FIX_319 = '1';
 
 import * as TelegramBot from "node-telegram-bot-api";
+import { Logger } from "./logger";
 
 export class TelegramClient {
 
@@ -16,7 +17,7 @@ export class TelegramClient {
             await this.bot.sendMessage(chatId, message);
             return true;
         } catch (e) {
-            console.error(`Couldn't send a telegram message to chat #${chatId}. Error code: ${e.code || e}`);
+            Logger.error(`Couldn't send a telegram message to chat #${chatId}. Error code: ${e.code || e}`);
             return false;
         }
     }
@@ -25,7 +26,7 @@ export class TelegramClient {
         try {
             return await this.bot.downloadFile(fileId, directory)
         } catch (e) {
-            console.error(`Couldn't download telegram file #${fileId}. Error code: ${e.code || e}`);
+            Logger.error(`Couldn't download telegram file #${fileId}. Error code: ${e.code || e}`);
             return null;
         }
     }
@@ -35,7 +36,7 @@ export class TelegramClient {
             await this.bot.sendDocument(chatId, file);
             return true;
         } catch (e) {
-            console.error(`Couldn't upload a file to chat #${chatId}. Error code: ${e.code || e}`);
+            Logger.error(`Couldn't upload a file to chat #${chatId}. Error code: ${e.code || e}`);
             return false;
         }
     }

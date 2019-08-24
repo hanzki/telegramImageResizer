@@ -4,6 +4,7 @@ import {ReceptionistBot} from "./src/receptionistBot";
 import {Update} from "node-telegram-bot-api";
 import {ResizeBot} from "./src/resizeBot";
 import * as path from "path";
+import { Logger } from './src/logger';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const RESIZE_REQUEST_QUEUE_NAME = process.env.RESIZE_REQUEST_QUEUE_NAME;
@@ -15,7 +16,7 @@ export const receiveTelegram: APIGatewayProxyHandler = async (event) => {
   try {
     update = JSON.parse(event.body);
   } catch (e) {
-    console.warn("Ignoring request with non-existent or malformed body");
+    Logger.warn("Ignoring request with non-existent or malformed body");
   }
 
   if(update && update.update_id) {
@@ -32,17 +33,17 @@ export const receiveTelegram: APIGatewayProxyHandler = async (event) => {
       ]);
 
       if (success === "TIMEOUT") {
-          console.error(`Timeout while processing update #${update.update_id}`);
+          Logger.error(`Timeout while processing update #${update.update_id}`);
           return { statusCode: 200, body: "TIMEOUT" }
       }
       if (success) {
           return { statusCode: 200, body: "OK" };
       } else {
-          console.error(`ReceptionistBot was unable to process update #${update.update_id}`);
+          Logger.error(`ReceptionistBot was unable to process update #${update.update_id}`);
           return { statusCode: 200, body: "BAD REQUEST" }
       }
     } catch (e) {
-        console.error("Unexpected error while processing update", e);
+        Logger.error("Unexpected error while processing update", e);
         return { statusCode: 200, body: "ERROR" }
     }
   } else {
@@ -58,10 +59,10 @@ export const processResizeRequest: SQSHandler = async (event) => {
     try {
       const resizeBot = new ResizeBot(TELEGRAM_BOT_TOKEN, path.join("/", "tmp", record.messageId));
 
-      console.info(`Received a SQS record: ${JSON.stringify(record)}`);
+      Logger.info(`Received a SQS record: ${JSON.stringify(record)}`);
       await resizeBot.processResizeRequest(JSON.parse(record.body));
     } catch (e) {
-        console.error(`Error while processing the SQS message #${record.messageId}`, e)
+        Logger.error(`Error while processing the SQS message #${record.messageId}`, e)
     }
   }));
 };

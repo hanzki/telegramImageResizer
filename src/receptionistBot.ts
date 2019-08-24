@@ -2,6 +2,7 @@ import {QueueClient, ResizeRequest} from "./queueClient";
 import {Message, Update} from "node-telegram-bot-api";
 import {TelegramClient} from "./telegramClient";
 import {ImageDownloader} from "./imageDownloader";
+import { Logger } from "./logger";
 
 export class ReceptionistBot {
     private queueClient;
@@ -48,12 +49,12 @@ export class ReceptionistBot {
                     await this.telegramClient.sendMessage(chatId, "Please send me an image or a link to an image");
                 }
             } else {
-                console.warn(`Ignoring update #${update.update_id} because it doesn't have a message`);
+                Logger.warn(`Ignoring update #${update.update_id} because it doesn't have a message`);
             }
 
             return true;
         } catch (e) {
-            console.error(`Error while processing update '${update.update_id}'"`, e);
+            Logger.error(`Error while processing update '${update.update_id}'"`, e);
             return false;
         }
     }
@@ -73,7 +74,7 @@ export class ReceptionistBot {
         if(this.SUPPORTED_FILE_TYPES.includes(contentType)) {
             return true;
         } else {
-            console.log(`Unsupported file type: ${contentType}`);
+            Logger.info(`Unsupported file type: ${contentType}`);
             return false;
         }
     }
@@ -87,7 +88,7 @@ export class ReceptionistBot {
             if(this.SUPPORTED_FILE_TYPES.includes(message.document.mime_type)) {
                 return message.document.file_id
             } else {
-                console.log(console.log(`Unsupported file type: ${message.document.mime_type}`));
+                Logger.info(`Unsupported file type: ${message.document.mime_type}`);
                 return null;
             }
         } else {

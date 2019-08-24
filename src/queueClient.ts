@@ -1,4 +1,5 @@
 import * as AWS from 'aws-sdk';
+import { Logger } from './logger';
 
 export class QueueClient {
 
@@ -21,7 +22,7 @@ export class QueueClient {
             await this.sqs.sendMessage(params).promise();
             return true;
         } catch (e) {
-            console.error(`Error while trying to insert message to SQS. Message: ${JSON.stringify(message)} QueueUrl: ${this.queueUrl}`, e);
+            Logger.error(`Error while trying to insert message to SQS. Message: ${JSON.stringify(message)} QueueUrl: ${this.queueUrl}`, e);
             return false;
         }
     }

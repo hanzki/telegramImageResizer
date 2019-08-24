@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as gm from 'gm';
+import { Logger } from "./logger";
 
 export class ImageResizer {
 
@@ -41,7 +42,7 @@ export class ImageResizer {
 
             return await resizePromise;
         } catch (e) {
-            console.error("Image resize failed with error:", e);
+            Logger.error("Image resize failed with error:", e);
             throw e;
         }
     }

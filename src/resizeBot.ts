@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 import {ImageDownloader} from "./imageDownloader";
 import {ImageResizer} from "./imageResizer";
+import { Logger } from "./logger";
 
 export class ResizeBot {
     private telegramClient;
@@ -14,7 +15,7 @@ export class ResizeBot {
     private outputDir;
 
     constructor(telegramBotToken: string, directory: string) {
-        console.log("Starting ResizeBot v1");
+        Logger.info("Starting ResizeBot v1");
         this.telegramClient = new TelegramClient(telegramBotToken);
         this.imageDownloader = new ImageDownloader(telegramBotToken);
         this.imageResizer = new ImageResizer();
@@ -47,11 +48,11 @@ export class ResizeBot {
             await this.telegramClient.sendFile(request.chatId, resizedImage);
             await this.telegramClient.sendMessage(request.chatId, "Here's your image ready to be made into a sticker!");
         } catch (e) {
-            console.error(`Couldn't process resize request: ${JSON.stringify(request)}`, e);
+            Logger.error(`Couldn't process resize request: ${JSON.stringify(request)}`, e);
             try {
                 await this.telegramClient.sendMessage(request.chatId, "Sorry I'm unable to process your image at this time.");
             } catch (e) {
-                console.error(`Couldn't send an error message following failed resize attempt.`);
+                Logger.error(`Couldn't send an error message following failed resize attempt.`);
             }
         }
     }
