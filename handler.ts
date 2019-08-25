@@ -70,7 +70,7 @@ export const processResizeRequest: SQSHandler = async (event) => {
     try {
       const resizeBot = new ResizeBot(TELEGRAM_BOT_TOKEN, path.join("/", "tmp", record.messageId));
 
-      Logger.info(`Received a SQS record: ${JSON.stringify(record)}`);
+      Logger.info(`Received a SQS message #${record.messageId}`, record);
       await withTimeout(RESIZE_IMAGE_TIMEOUT_MS, resizeBot.processResizeRequest(JSON.parse(record.body)));
     } catch (e) {
         Logger.error(`Error while processing the SQS message #${record.messageId}`, e)
