@@ -45,6 +45,7 @@ export class ReceptionistBot {
 
                     await this.queueClient.insertMessage(queueMsg);
                     await this.telegramClient.sendMessage(chatId, "Thank you. I'll resize your image in a jiffy!");
+                    Logger.info("Received resize request", {request: queueMsg});
                 } else {
                     await this.telegramClient.sendMessage(chatId, "Please send me an image or a link to an image");
                 }
@@ -54,7 +55,7 @@ export class ReceptionistBot {
 
             return true;
         } catch (e) {
-            Logger.error(`Error while processing update '${update.update_id}'"`, e);
+            Logger.error(`Error while processing update '${update.update_id}'"`, { update: update, error: e });
             return false;
         }
     }
@@ -74,7 +75,7 @@ export class ReceptionistBot {
         if(this.SUPPORTED_FILE_TYPES.includes(contentType)) {
             return true;
         } else {
-            Logger.info(`Unsupported file type: ${contentType}`);
+            Logger.info("Unsupported file type", {source: "URL", contentType: contentType});
             return false;
         }
     }
@@ -88,7 +89,7 @@ export class ReceptionistBot {
             if(this.SUPPORTED_FILE_TYPES.includes(message.document.mime_type)) {
                 return message.document.file_id
             } else {
-                Logger.info(`Unsupported file type: ${message.document.mime_type}`);
+                Logger.info("Unsupported file type", {source: "TELEGRAM", contentType: message.document.mime_type});
                 return null;
             }
         } else {
