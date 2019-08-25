@@ -5,9 +5,13 @@ import {Update} from "node-telegram-bot-api";
 import {ResizeBot} from "./src/resizeBot";
 import * as path from "path";
 import { Logger } from './src/logger';
+import { withTimeout, TimeoutError } from './src/utils';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const RESIZE_REQUEST_QUEUE_NAME = process.env.RESIZE_REQUEST_QUEUE_NAME;
+
+const RECEIVE_TELEGRAM_TIMEOUT_MS = 5000;
+const RESIZE_IMAGE_TIMEOUT_MS = 30000;
 
 export const receiveTelegram: APIGatewayProxyHandler = async (event) => {
   const receptionistBot = new ReceptionistBot(TELEGRAM_BOT_TOKEN, RESIZE_REQUEST_QUEUE_NAME);
@@ -15,41 +19,48 @@ export const receiveTelegram: APIGatewayProxyHandler = async (event) => {
   let update: Update;
   try {
     update = JSON.parse(event.body);
+    validateUpdate(update);
   } catch (e) {
-    Logger.warn("Ignoring request with non-existent or malformed body");
+    Logger.error("Couldn't parse request. Non-existent or malformed body", e);
+    return { statusCode: 400, body: "BAD REQUEST"}
   }
 
-  if(update && update.update_id) {
-    try {
-      const timer = new Promise((resolve, reject) => {
-        let wait = setTimeout(() => {
-            clearTimeout(wait);
-            resolve("TIMEOUT");
-        }, 5000);
-      });
-      const success = await Promise.race([
-          receptionistBot.receiveUpdate(update),
-          timer
-      ]);
+  try {
+    const success = await withTimeout(
+      RECEIVE_TELEGRAM_TIMEOUT_MS,
+      receptionistBot.receiveUpdate(update)
+    );
 
-      if (success === "TIMEOUT") {
-          Logger.error(`Timeout while processing update #${update.update_id}`);
-          return { statusCode: 200, body: "TIMEOUT" }
-      }
-      if (success) {
-          return { statusCode: 200, body: "OK" };
-      } else {
-          Logger.error(`ReceptionistBot was unable to process update #${update.update_id}`);
-          return { statusCode: 200, body: "BAD REQUEST" }
-      }
-    } catch (e) {
-        Logger.error("Unexpected error while processing update", e);
-        return { statusCode: 200, body: "ERROR" }
+    if (success) {
+        return { statusCode: 200, body: "OK" };
+    } else {
+        Logger.error(`ReceptionistBot was unable to process update #${update.update_id}`);
+        return { statusCode: 200, body:  unableToProcessUpdateResponse(update)}
     }
-  } else {
-    return { statusCode: 200, body: "BAD REQUEST" }
+  } catch (e) {
+    Logger.error("Unexpected error while processing update", e);
+    return { statusCode: 200, body: unableToProcessUpdateResponse(update) }
   }
 };
+
+function validateUpdate(update: Update) {
+  if(!update || !update.update_id) {
+      throw new Error("Update missing 'update_id'");
+  }
+}
+
+function unableToProcessUpdateResponse(update: Update): string {
+  const chatId = update.message && update.message.chat && update.message.chat.id
+  if(chatId) {
+    return JSON.stringify({
+      method: "sendMessage",
+      chat_id: chatId,
+      text: "Sorry. I'm unable to process your request at this time. Please try again later."
+    })
+  } else {
+    return "";
+  }
+}
 
 export const processResizeRequest: SQSHandler = async (event) => {
 
@@ -60,7 +71,7 @@ export const processResizeRequest: SQSHandler = async (event) => {
       const resizeBot = new ResizeBot(TELEGRAM_BOT_TOKEN, path.join("/", "tmp", record.messageId));
 
       Logger.info(`Received a SQS record: ${JSON.stringify(record)}`);
-      await resizeBot.processResizeRequest(JSON.parse(record.body));
+      await withTimeout(RESIZE_IMAGE_TIMEOUT_MS, resizeBot.processResizeRequest(JSON.parse(record.body)));
     } catch (e) {
         Logger.error(`Error while processing the SQS message #${record.messageId}`, e)
     }

@@ -33,6 +33,7 @@ functions:
     handler: handler.processResizeRequest
     layers:
       - arn:aws:lambda:${opt:region, self:provider.region}:175033217214:layer:graphicsmagick:2
+    timeout: 60
     events:
       - sqs:
           arn:
